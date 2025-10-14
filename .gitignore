@@ -129,3 +129,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 .DS_Store
+
+# Build outputs
+dist/
+build/
+*.js.map
+*.d.ts.map
