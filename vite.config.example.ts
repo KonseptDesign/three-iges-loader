@@ -4,7 +4,7 @@ export default defineConfig({
   root: "example",
   server: {
     port: 3000,
-    open: "/index-vite.html",
+    open: true,
   },
   build: {
     outDir: "../dist-example",

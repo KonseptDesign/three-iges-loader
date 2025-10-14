@@ -295,23 +295,6 @@ class IGESLoader extends Loader<Group> {
       // Don't trim before filtering as IGES lines can be space-padded
       const lines = data.split(/\r?\n/).filter((item) => item.length > 0);
 
-      // Debug: Log first few lines to see what we're getting
-      if (lines.length > 0) {
-        console.log("Total lines:", lines.length);
-        console.log(
-          "First line length:",
-          lines[0]?.length,
-          "Content:",
-          JSON.stringify(lines[0]?.substring(0, 80))
-        );
-        console.log(
-          "Second line length:",
-          lines[1]?.length,
-          "Content:",
-          JSON.stringify(lines[1]?.substring(0, 80))
-        );
-      }
-
       let currentSection = "";
       let startSec = "",
         globalSec = "",
