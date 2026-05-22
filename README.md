@@ -26,6 +26,8 @@
 
 ## Install
 
+`three` is a [peer dependency](https://nodejs.org/en/blog/npm/peer-dependencies) — install it alongside this package (any version `>=0.160.0` is supported; development targets Three.js r184).
+
 ```bash
 pnpm add three-iges-loader three
 ```
