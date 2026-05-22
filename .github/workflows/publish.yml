@@ -1,35 +1,62 @@
 name: NPM Publish
+
 on:
   workflow_run:
     workflows: [CI]
     branches: [main]
     types: [completed]
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency:
+  group: npm-publish-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          version: latest
-      - uses: actions/setup-node@v4
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22.x
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - name: Create Release Pull Request or Publish to npm
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Upgrade npm (Trusted Publishing / provenance)
+        run: npm install -g npm@latest
+
+      - name: Create Release PR or publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           publish: pnpm run release
+          title: Version Packages
+          commit: Version Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish summary
+        if: steps.changesets.outputs.published == 'true'
+        run: echo "Published to npm — ${{ steps.changesets.outputs.publishedPackages }}"
