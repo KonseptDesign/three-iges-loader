@@ -82,6 +82,11 @@
     "vite": "^6.0.0",
     "vitest": "^2.1.4"
   },
+  "packageManager": "pnpm@9.15.9",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "engines": {
     "node": ">=18.0.0"
   },
