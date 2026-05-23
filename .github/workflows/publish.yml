@@ -1,23 +1,24 @@
-name: NPM Publish
+# Changesets: "Version Packages" PRs + npm publish via Trusted Publishing (OIDC).
+# @see https://docs.npmjs.com/trusted-publishers
+# @see docs/GITHUB_SETUP.md
+name: Publish
 
 on:
-  workflow_run:
-    workflows: [CI]
+  push:
     branches: [main]
-    types: [completed]
 
 concurrency:
-  group: npm-publish-${{ github.event.workflow_run.head_branch }}
+  group: publish-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  id-token: write # OIDC for npm Trusted Publishing
+  contents: write
+  pull-requests: write
 
 jobs:
   publish:
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
+    name: Version & publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -28,35 +29,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
-          cache: pnpm
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Upgrade npm (Trusted Publishing / provenance)
-        run: npm install -g npm@latest
-
-      - name: Create Release PR or publish to npm
+      # Pending .changeset/*.md → open "Version Packages" PR (no publish).
+      # No pending changesets (usually right after merging that PR) → npm publish (OIDC).
+      - name: Changesets
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm run release
-          title: Version Packages
-          commit: Version Packages
+          version: pnpm run version-packages
+          publish: npm publish --access public
+          commit: "chore(release): version packages"
+          title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish summary
         if: steps.changesets.outputs.published == 'true'
-        run: echo "Published to npm — ${{ steps.changesets.outputs.publishedPackages }}"
+        run: |
+          echo "### Published to npm" >> "$GITHUB_STEP_SUMMARY"
+          echo "Published with \`npm publish\` (Trusted Publishing / OIDC)." >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          echo '${{ steps.changesets.outputs.publishedPackages }}' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

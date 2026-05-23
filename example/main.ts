@@ -60,6 +60,8 @@ function createGUI(): void {
     .add(guiData, "currentURL", {
       point: "/point.iges",
       line: "/line.iges",
+      slot: "/slot.iges",
+      arc: "/arc.iges",
     })
     .name("IGES File")
     .onChange(update);

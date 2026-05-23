@@ -3,9 +3,9 @@
 </p>
 <p align="center">
 <a href="https://www.npmjs.com/package/three-iges-loader"><img src="https://img.shields.io/npm/v/three-iges-loader?label=latest" alt="npm version" /></a>
-<a href="https://github.com/Konsept-Design/three-iges-loader/blob/main/LICENSE" rel="nofollow"><img src="https://img.shields.io/npm/l/three-iges-loader" alt="license" /></a>
-<a href="https://github.com/Konsept-Design/three-iges-loader/actions?query=branch%3Amain" rel="nofollow"><img src="https://github.com/Konsept-Design/three-iges-loader/actions/workflows/main.yml/badge.svg?event=push&branch=main" alt="build status" /></a>
-<a href="https://github.com/Konsept-Design/three-iges-loader" rel="nofollow"><img src="https://img.shields.io/github/stars/Konsept-Design/three-iges-loader" alt="stars"></a>
+<a href="https://github.com/KonseptDesign/three-iges-loader/blob/main/LICENSE" rel="nofollow"><img src="https://img.shields.io/npm/l/three-iges-loader" alt="license" /></a>
+<a href="https://github.com/KonseptDesign/three-iges-loader/actions?query=branch%3Amain" rel="nofollow"><img src="https://github.com/KonseptDesign/three-iges-loader/actions/workflows/main.yml/badge.svg?event=push&branch=main" alt="build status" /></a>
+<a href="https://github.com/KonseptDesign/three-iges-loader" rel="nofollow"><img src="https://img.shields.io/github/stars/KonseptDesign/three-iges-loader" alt="stars"></a>
 </p>
 
 **IGESLoader** is a modern TypeScript-native IGES file loader for Three.js.
@@ -14,15 +14,26 @@
 > This package is currently in active development and may not be stable. Use with caution.
 
 > [!NOTE]
-> Currently, only a limited number of 'entity' types are parsed (mainly to be able to display points/lines/curves).
+> Wireframe entities (points, lines, arcs, paths, NURBS curves) are supported first. **Surfaces and B-rep solids** are planned — see [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Features
 
-✨ **TypeScript Native** - Written in TypeScript with full type definitions  
-📦 **Modern ESM/CJS** - Dual package format with tree-shaking support  
-🔧 **Fully Typed** - Complete type safety for all IGES entities  
-⚡ **Fast** - Optimized build with tsup and modern tooling  
-🧪 **Well Tested** - Comprehensive test suite with Vitest
+✨ **Layered architecture** — `iges-core` parser (no Three.js) + thin `IGESLoader`  
+📦 **Modern ESM/CJS** — Dual package format with tree-shaking support  
+🔧 **Typed geometry model** — `parseAndResolveIGES()` for custom pipelines  
+⚡ **Fast** — Optimized build with tsup and pnpm workspaces  
+🧪 **Tested** — Unit tests + Wikipedia *slot* fixture  
+🤖 **AI-friendly** — See [AGENTS.md](AGENTS.md) and [docs/ENTITY_IMPLEMENTATION.md](docs/ENTITY_IMPLEMENTATION.md)
+
+## Architecture
+
+```
+iges-core/          Parse IGES → ResolvedIGESModel (geometry[])
+src/three/          toThreeGroup() → THREE.Group
+IGESLoader.ts       FileLoader + parse + tessellate
+```
+
+Full details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md)
 
 ## Install
 
@@ -97,20 +108,27 @@ loader.load(
 );
 ```
 
-### Advanced Usage
+### React Three Fiber
+
+```tsx
+import { useLoader } from "@react-three/fiber";
+import { IGESLoader } from "three-iges-loader";
+
+function IgesModel({ url }: { url: string }) {
+  const group = useLoader(IGESLoader, url);
+  return <primitive object={group} />;
+}
+```
+
+### Advanced — parse without the loader
 
 ```typescript
-import { IGESLoader, type IGESData } from "three-iges-loader";
-import * as THREE from "three";
+import { parseAndResolveIGES, toThreeGroup } from "three-iges-loader";
 
-// With loading manager
-const manager = new THREE.LoadingManager();
-const loader = new IGESLoader(manager);
-
-// Parse from string
-const igesContent = "..."; // IGES file content as string
-const geometry = loader.parse(igesContent);
-scene.add(geometry);
+const text = await fetch("/model.igs").then((r) => r.text());
+const model = parseAndResolveIGES(text);
+const group = toThreeGroup(model, { convertZUpToYUp: true });
+scene.add(group);
 ```
 
 ## Development
@@ -123,13 +141,13 @@ scene.add(geometry);
 ### Setup
 
 ```bash
-# Install dependencies
+# Install dependencies (pnpm workspace: root + packages/iges-core)
 pnpm install
 
-# Build the library
+# Build iges-core + three-iges-loader
 pnpm build
 
-# Run tests
+# Run all tests (core unit + loader integration)
 pnpm test
 
 # Run tests in watch mode
@@ -185,39 +203,38 @@ Parse IGES file content.
 - `data: string` - The IGES file content as string
 - Returns: `THREE.Group` - A Three.js Group containing the parsed geometry
 
-### Type Exports
+### Type exports
 
 ```typescript
-import type { EntityAttribute, EntityParam, IGESData } from "three-iges-loader";
+import type { ResolvedIGESModel, GeometryEntity, LineGeometry } from "three-iges-loader";
 ```
 
-## Supported IGES Entities
+## Supported IGES entities (Phase B)
 
-Currently supported entity types:
-
-- ✅ 100 - Circular Arc
-- ✅ 106 - Copious Data / Linear Path / Witness Line / Simple Closed Planar Curve
-- ✅ 110 - Line
-- ✅ 116 - Point
-- ✅ 126 - Rational B-Spline Curve
-- 🚧 102 - Composite Curve (TODO)
-- 🚧 108 - Plane (TODO)
-- 🚧 120 - Surface of Revolution (TODO)
-- 🚧 122 - Tabulated Cylinder (TODO)
-- 🚧 124 - Transformation Matrix (TODO)
-- 🚧 128 - Rational B-Spline Surface (TODO)
-- 🚧 142 - Curve on Parametric Surface (TODO)
-- 🚧 144 - Trimmed Parametric Surface (TODO)
+| Type | Name | Status |
+|------|------|--------|
+| 116 | Point | ✅ |
+| 110 | Line | ✅ |
+| 100 | Circular arc | ✅ |
+| 106 | Copious data / paths | ✅ partial forms |
+| 126 | Rational B-spline curve | ✅ sampled |
+| 124 | Transform matrix | ✅ resolve only |
+| 102 | Composite curve | ⬜ [roadmap](docs/ROADMAP.md) |
+| 128+ | Surfaces / B-rep | ⬜ deferred |
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome — see **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+| Doc | Purpose |
+|-----|---------|
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Setup, PR flow, changesets |
+| [AGENTS.md](AGENTS.md) | AI coding assistants |
+| [RELEASING.md](RELEASING.md) | Versioning & npm (maintainers) |
+| [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md) | One-time GitHub/npm configuration |
+| [SECURITY.md](SECURITY.md) | Vulnerability reporting |
+
+**Releases:** [Semantic versioning](https://semver.org/) via [Changesets](https://github.com/changesets/changesets); merges to `main` open a Version Packages PR, then publish to npm automatically.
 
 ## License
 
@@ -226,7 +243,7 @@ MIT © [Alex Marinov](https://github.com/alex-marinov)
 ## Acknowledgments
 
 - Based on the original work by [Alex Marinov](https://github.com/alex-marinov)
-- Maintained by [Konsept Design](https://github.com/Konsept-Design)
+- Maintained by [Konsept Design](https://github.com/KonseptDesign)
 - Built with [Three.js](https://threejs.org/)
 
 ## Resources

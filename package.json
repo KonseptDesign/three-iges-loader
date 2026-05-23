@@ -1,7 +1,7 @@
 {
   "name": "three-iges-loader",
   "version": "2.0.0",
-  "description": "three.js IGES loader",
+  "description": "TypeScript IGES loader for Three.js — parser + wireframe tessellation",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -24,26 +24,34 @@
     "LICENSE"
   ],
   "sideEffects": false,
+  "dependencies": {
+    "iges-core": "workspace:*"
+  },
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "pnpm --filter iges-core build && tsup",
+    "dev": "pnpm --filter iges-core dev & tsup --watch",
     "dev:example": "vite --config vite.config.example.ts",
     "build:example": "vite build --config vite.config.example.ts",
-    "type-check": "tsc --noEmit",
-    "test": "vitest run",
+    "type-check": "pnpm --filter iges-core type-check && tsc --noEmit",
+    "test": "pnpm --filter iges-core test && vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "lint": "eslint src test --ext .ts",
-    "lint:fix": "eslint src test --ext .ts --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint src test packages/iges-core/src packages/iges-core/test",
+    "lint:fix": "eslint src test packages/iges-core/src packages/iges-core/test --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"packages/iges-core/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"packages/iges-core/**/*.ts\"",
     "prepare": "husky",
     "prepublishOnly": "pnpm run build && pnpm run type-check && pnpm run test",
-    "release": "changeset publish"
+    "changeset": "changeset",
+    "version-packages": "changeset version"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alex-marinov/three-iges-loader.git"
+    "url": "git+https://github.com/KonseptDesign/three-iges-loader.git"
   },
   "keywords": [
     "three.js",
@@ -56,13 +64,14 @@
   "author": "Alex Marinov",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alex-marinov/three-iges-loader/issues"
+      "url": "https://github.com/KonseptDesign/three-iges-loader/issues"
   },
-  "homepage": "https://github.com/alex-marinov/three-iges-loader#readme",
+  "homepage": "https://github.com/KonseptDesign/three-iges-loader#readme",
   "peerDependencies": {
     "three": ">=0.160.0"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.0",
     "@changesets/cli": "^2.29.7",
     "@types/node": "^22.8.6",
     "@types/three": "^0.184.0",
@@ -92,7 +101,7 @@
   },
   "lint-staged": {
     "*.ts": [
-      "eslint --fix",
+      "eslint --fix --no-warn-ignored",
       "prettier --write"
     ]
   }
