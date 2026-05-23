@@ -27,12 +27,12 @@ This repo publishes with **[npm Trusted Publishing](https://docs.npmjs.com/trust
 
 ### What the publish workflow does
 
-After **CI** succeeds on **`main`**, [`.github/workflows/publish.yml`](../.github/workflows/publish.yml) runs (not in parallel with tests):
+After **CI** succeeds on **`dev`** or **`main`**, [`.github/workflows/publish.yml`](../.github/workflows/publish.yml) runs:
 
-| Situation | What happens |
-|-----------|----------------|
-| There are files in `.changeset/` | Opens or updates a **“Version Packages”** PR (bumps version + `CHANGELOG.md`). **No publish yet.** |
-| There are **no** pending changesets (typically right after you merge that Version PR) | Runs **`npm publish --access public`**. npm verifies the job against your trusted publisher config and uploads the package (with provenance). |
+| Branch | Job | What happens |
+|--------|-----|----------------|
+| **`dev`** | Version packages | Opens **Version Packages** PR if `.changeset/` files exist |
+| **`main`** | Publish to npm | Runs **`npm publish`** (OIDC); fails if that version already exists |
 
 So you will **not** see a separate `run: npm publish` step in the YAML list — the [Changesets action](https://github.com/changesets/action) runs it for you via its `publish:` input when it is time to release. On npm, the allowed action **`npm publish`** still matches that command.
 

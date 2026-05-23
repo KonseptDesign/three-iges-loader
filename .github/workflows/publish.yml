@@ -1,5 +1,4 @@
-# Changesets: "Version Packages" PRs + npm publish via Trusted Publishing (OIDC).
-# Runs only after CI succeeds on main (not in parallel with tests).
+# Changesets on dev (Version Packages PRs) + npm publish on main (Trusted Publishing / OIDC).
 # @see https://docs.npmjs.com/trusted-publishers
 # @see docs/GITHUB_SETUP.md
 name: Publish
@@ -8,7 +7,7 @@ on:
   workflow_run:
     workflows: [CI]
     types: [completed]
-    branches: [main]
+    branches: [main, dev]
   workflow_dispatch:
 
 env:
@@ -24,12 +23,49 @@ permissions:
   pull-requests: write
 
 jobs:
-  publish:
-    name: Version & publish
+  version:
+    name: Version packages (dev)
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/dev') ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'dev')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Changesets (version PR)
+        uses: changesets/action@v1
+        with:
+          version: pnpm run version-packages
+          commit: "chore(release): version packages"
+          title: "chore(release): version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    name: Publish to npm (main)
+    runs-on: ubuntu-latest
+    if: >
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
 
     steps:
       - name: Checkout
@@ -51,14 +87,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Changesets
+      - name: Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
-          version: pnpm run version-packages
           publish: npm publish --access public
-          commit: "chore(release): version packages"
-          title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -66,7 +99,7 @@ jobs:
         if: steps.changesets.outputs.published == 'true'
         run: |
           echo "### Published to npm" >> "$GITHUB_STEP_SUMMARY"
-          echo "Published with \`npm publish\` (Trusted Publishing / OIDC)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Published with npm Trusted Publishing (OIDC)." >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           echo '${{ steps.changesets.outputs.publishedPackages }}' >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
