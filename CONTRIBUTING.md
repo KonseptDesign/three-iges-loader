@@ -18,10 +18,21 @@ pnpm dev:example   # optional: visual check at http://localhost:3000
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for planned entity types and phases. **Phase B** (wireframe / curves) is the current focus; surfaces and B-rep are deferred unless discussed first.
 
+## Branch strategy
+
+| Branch | Purpose |
+|--------|---------|
+| **`dev`** | Day-to-day development. Open PRs here. Dependabot targets this branch. |
+| **`main`** | Release line only. Merge `dev` → `main` when you are ready to ship. CI + npm publish run on `main`. |
+
+**Contributors:** branch from `dev`, open PRs against `dev`, add a changeset for user-facing changes.
+
+**Maintainers:** when releasing, merge `dev` → `main`. Changesets opens **Version Packages** PRs against `dev`; after merging that, merge `dev` → `main` to trigger npm publish.
+
 ## Development workflow
 
 1. **Fork** the repo (or branch in-repo if you are a maintainer).
-2. **Create a branch** from `main`: `feat/type-102-composite-curve`, `fix/de-sequence-parse`, etc.
+2. **Create a branch** from `dev`: `feat/type-102-composite-curve`, `fix/de-sequence-parse`, etc.
 3. **Make focused changes** — one entity type or one logical fix per PR when possible.
 4. **Add tests** — place IGES fixtures in `test/fixtures/` (80-column lines; see [test/fixtures/README.md](test/fixtures/README.md)).
 5. **Run checks** before opening a PR:
@@ -41,7 +52,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for planned entity types and phases. **Ph
 
    Choose `patch` / `minor` / `major` per [Semantic Versioning](https://semver.org/). Describe the user-facing impact.
 
-7. **Open a pull request** against `main` with a clear description and link any related issues.
+7. **Open a pull request** against `dev` with a clear description and link any related issues.
 
 ## Architecture (where to edit)
 
