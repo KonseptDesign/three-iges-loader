@@ -58,7 +58,7 @@ pnpm version-packages       # bump versions locally (usually let CI do this)
 | `three-iges-loader` | ✅ [npm](https://www.npmjs.com/package/three-iges-loader) | Public; bundles `iges-core` |
 | `iges-core` | ❌ | `private: true` workspace package |
 
-To publish `iges-core` separately later: remove `private`, remove from `ignore` in `.changeset/config.json`, and add a `linked` or `fixed` group in Changesets config.
+To publish `iges-core` separately later: remove `private` from `packages/iges-core/package.json` and add a `linked` or `fixed` group in `.changeset/config.json`.
 
 ## GitHub & npm setup
 
