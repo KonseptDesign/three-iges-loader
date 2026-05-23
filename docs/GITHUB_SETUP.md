@@ -27,7 +27,7 @@ This repo publishes with **[npm Trusted Publishing](https://docs.npmjs.com/trust
 
 ### What the publish workflow does
 
-Every push to **`main`** runs [`.github/workflows/publish.yml`](../.github/workflows/publish.yml):
+After **CI** succeeds on **`main`**, [`.github/workflows/publish.yml`](../.github/workflows/publish.yml) runs (not in parallel with tests):
 
 | Situation | What happens |
 |-----------|----------------|

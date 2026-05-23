@@ -8,6 +8,10 @@
     // Modules
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "iges-core": ["./packages/iges-core/src/index.ts"]
+    },
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
 

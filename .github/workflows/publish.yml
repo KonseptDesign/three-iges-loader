@@ -1,18 +1,22 @@
 # Changesets: "Version Packages" PRs + npm publish via Trusted Publishing (OIDC).
+# Runs only after CI succeeds on main (not in parallel with tests).
 # @see https://docs.npmjs.com/trusted-publishers
 # @see docs/GITHUB_SETUP.md
 name: Publish
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
-  group: publish-${{ github.ref }}
+  group: publish-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: false
 
 permissions:
-  id-token: write # OIDC for npm Trusted Publishing
+  id-token: write
   contents: write
   pull-requests: write
 
@@ -20,16 +24,17 @@ jobs:
   publish:
     name: Version & publish
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -43,8 +48,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Pending .changeset/*.md → open "Version Packages" PR (no publish).
-      # No pending changesets (usually right after merging that PR) → npm publish (OIDC).
       - name: Changesets
         id: changesets
         uses: changesets/action@v1
