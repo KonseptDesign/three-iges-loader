@@ -12,7 +12,7 @@ pnpm test
 pnpm dev:example   # optional: visual check at http://localhost:3000
 ```
 
-**Requirements:** Node.js ≥ 18, pnpm 9+.
+**Requirements:** Node.js ≥ 18, pnpm 10+ (see `packageManager` in `package.json`).
 
 ## What to work on
 
