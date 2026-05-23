@@ -25,7 +25,7 @@ flowchart LR
 Merge feature work with a `.changeset/*.md` file to **`dev`**. After CI passes, **Publish → Version packages (dev)** opens a **“Version Packages”** PR against `dev` (bumps `package.json`, updates `CHANGELOG.md`).
 
 **Phase 2 — ship (merge to `main`)**  
-Review and merge the Version Packages PR on `dev`, then merge **`dev` → `main`**. After CI on `main`, **Publish → Publish to npm** uploads the new version (OIDC).
+Review and merge the Version Packages PR on `dev`, then merge **`dev` → `main`** only when the version in `package.json` is **not yet on npm**. After CI on `main`, **Publish → Publish to npm** runs only for unpublished versions (strict `npm publish` — fails if the version already exists).
 
 Changelog entries come from changeset summaries and `@changesets/changelog-github` (links PRs/issues). You do not edit `CHANGELOG.md` by hand for releases.
 
@@ -72,7 +72,8 @@ One-time configuration: **[docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md)**.
 | Problem | Check |
 |---------|--------|
 | Version PR never opens | Changeset merged to **`dev`**? CI passed on `dev`? |
-| Publish fails with “already published” | Version on `main` matches npm — bump via Changesets on `dev` before merging to `main` again |
+| Publish fails with “already published” | `main` has a version already on npm — merge a **Version Packages** bump on `dev` first, then merge `dev` → `main` again |
+| Publish job skipped on `main` | Expected when merging `dev` → `main` without a new version (e.g. workflow-only changes); check **Check unpublished version** job summary |
 | `ENEEDAUTH` / 401 | Trusted Publishing: workflow **`publish.yml`**, repo match, `id-token: write` |
 | Wrong version bumped | Changeset type in `.changeset/*.md` |
 
