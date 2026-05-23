@@ -1,5 +1,13 @@
 # three-iges-loader
 
+## 2.1.0
+
+### Minor Changes
+
+- [#101](https://github.com/KonseptDesign/three-iges-loader/pull/101) [`0027ffd`](https://github.com/KonseptDesign/three-iges-loader/commit/0027ffd24c85b0eb6309568b42ad6ee9e6349fbc) Thanks [@alex-marinov](https://github.com/alex-marinov)! - Move `three` from runtime dependencies to peer dependencies so consumers use a single Three.js instance. Development and tests now use Three.js r184.
+
+  **How to update:** Ensure `three` is installed in your app (`npm install three` / `pnpm add three`). If you previously relied on this package to pull in `three` transitively, add `three` explicitly to your project dependencies.
+
 ## 2.0.0
 
 ### Major Changes

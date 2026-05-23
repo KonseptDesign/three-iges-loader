@@ -1,6 +1,6 @@
 {
   "name": "three-iges-loader",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "TypeScript IGES loader for Three.js — parser + wireframe tessellation",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -64,7 +64,7 @@
   "author": "Alex Marinov",
   "license": "MIT",
   "bugs": {
-      "url": "https://github.com/KonseptDesign/three-iges-loader/issues"
+    "url": "https://github.com/KonseptDesign/three-iges-loader/issues"
   },
   "homepage": "https://github.com/KonseptDesign/three-iges-loader#readme",
   "peerDependencies": {
