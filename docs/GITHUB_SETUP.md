@@ -32,7 +32,7 @@ After **CI** succeeds on **`dev`** or **`main`**, [`.github/workflows/publish.ym
 | Branch | Job | What happens |
 |--------|-----|----------------|
 | **`dev`** | Version packages | Opens **Version Packages** PR if `.changeset/` files exist |
-| **`main`** | Publish to npm | Runs **`npm publish`** (OIDC); fails if that version already exists |
+| **`main`** | Publish to npm | Only if `package.json` version is **not** on npm yet; then strict `npm publish` (OIDC) |
 
 So you will **not** see a separate `run: npm publish` step in the YAML list — the [Changesets action](https://github.com/changesets/action) runs it for you via its `publish:` input when it is time to release. On npm, the allowed action **`npm publish`** still matches that command.
 
