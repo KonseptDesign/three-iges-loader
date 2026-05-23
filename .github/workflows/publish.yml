@@ -11,6 +11,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: publish-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: false

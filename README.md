@@ -4,7 +4,7 @@
 <p align="center">
 <a href="https://www.npmjs.com/package/three-iges-loader"><img src="https://img.shields.io/npm/v/three-iges-loader?label=latest" alt="npm version" /></a>
 <a href="https://github.com/KonseptDesign/three-iges-loader/blob/main/LICENSE" rel="nofollow"><img src="https://img.shields.io/npm/l/three-iges-loader" alt="license" /></a>
-<a href="https://github.com/KonseptDesign/three-iges-loader/actions?query=branch%3Amain" rel="nofollow"><img src="https://github.com/KonseptDesign/three-iges-loader/actions/workflows/main.yml/badge.svg?event=push&branch=main" alt="build status" /></a>
+<a href="https://github.com/KonseptDesign/three-iges-loader/actions?query=branch%3Amain" rel="nofollow"><img src="https://github.com/KonseptDesign/three-iges-loader/actions/workflows/ci.yml/badge.svg?branch=main" alt="build status" /></a>
 <a href="https://github.com/KonseptDesign/three-iges-loader" rel="nofollow"><img src="https://img.shields.io/github/stars/KonseptDesign/three-iges-loader" alt="stars"></a>
 </p>
 
