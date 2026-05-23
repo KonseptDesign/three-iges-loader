@@ -15,4 +15,5 @@ export default defineConfig({
     };
   },
   external: ["three"],
+  noExternal: ["iges-core"],
 });

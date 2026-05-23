@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question / discussion
+    url: https://github.com/KonseptDesign/three-iges-loader/discussions
+    about: Ask questions or suggest ideas without opening a bug report

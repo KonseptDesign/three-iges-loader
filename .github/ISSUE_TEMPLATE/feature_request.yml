@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest an IGES entity, API improvement, or enhancement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check [docs/ROADMAP.md](../../docs/ROADMAP.md) before filing — surfaces/B-rep may already be deferred.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What are you trying to load or build?
+    validations:
+      required: true
+
+  - type: input
+    id: entity_type
+    attributes:
+      label: IGES entity type (if applicable)
+      placeholder: e.g. Type 102 Composite Curve
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to open a PR for this (with tests)

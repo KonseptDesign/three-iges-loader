@@ -1,0 +1,59 @@
+name: Bug report
+description: Something is wrong with parsing or Three.js output
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please include a minimal IGES file when possible.
+        See [CONTRIBUTING.md](../../CONTRIBUTING.md) for environment setup.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Expected vs actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Load file X with IGESLoader
+        2. ...
+    validations:
+      required: true
+
+  - type: input
+    id: three_version
+    attributes:
+      label: three version
+      placeholder: e.g. 0.184.0
+    validations:
+      required: true
+
+  - type: input
+    id: loader_version
+    attributes:
+      label: three-iges-loader version
+      placeholder: e.g. 2.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: iges_file
+    attributes:
+      label: IGES sample
+      description: Attach `.iges` / `.igs` in a follow-up comment, or paste a minimal excerpt
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of conduct
+      options:
+        - label: I agree to follow the project's Code of Conduct
+          required: true
