@@ -28,13 +28,12 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "type-check": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "pnpm -w exec vitest run --project iges-core",
+    "test:watch": "pnpm -w exec vitest --project iges-core"
   },
   "license": "MIT",
   "devDependencies": {
     "tsup": "^8.3.5",
-    "typescript": "^5.6.3",
-    "vitest": "^2.1.4"
+    "typescript": "^5.6.3"
   }
 }

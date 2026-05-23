@@ -44,7 +44,7 @@ Build and tests run automatically via **`prepublishOnly`** in `package.json` bef
 |-------------|-----|
 | `permissions.id-token: write` | GitHub issues the OIDC token npm checks |
 | `setup-node` with `registry-url: https://registry.npmjs.org` | npm CLI knows which registry to use |
-| Node **24** on the publish job | Bundled npm supports Trusted Publishing (≥ 11.5.1 per npm docs) |
+| Node **24** (CI and publish) | Current LTS; bundled npm supports Trusted Publishing (≥ 11.5.1 per npm docs) |
 | `runs-on: ubuntu-latest` | GitHub-hosted runners only (per npm docs) |
 | No `cache` on `setup-node` in the publish job | Avoid npm publish cache quirks; omit `cache` (do not use `cache: false` — unsupported in setup-node v4) |
 

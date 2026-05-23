@@ -33,7 +33,7 @@
     "dev:example": "vite --config vite.config.example.ts",
     "build:example": "vite build --config vite.config.example.ts",
     "type-check": "pnpm --filter iges-core type-check && tsc --noEmit",
-    "test": "pnpm --filter iges-core test && vitest run",
+    "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "lint": "eslint src test packages/iges-core/src packages/iges-core/test",
@@ -92,12 +92,8 @@
     "vitest": "^2.1.4"
   },
   "packageManager": "pnpm@10.33.4",
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=24.0.0"
   },
   "lint-staged": {
     "*.ts": [

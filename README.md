@@ -135,7 +135,7 @@ scene.add(group);
 
 ### Prerequisites
 
-- Node.js >= 18.0.0
+- Node.js >= 24.0.0 (LTS)
 - pnpm (recommended) or npm
 
 ### Setup

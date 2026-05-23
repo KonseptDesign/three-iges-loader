@@ -23,6 +23,7 @@ export default tseslint.config(
       "node_modules/",
       "coverage/",
       "**/*.config.*",
+      "**/*.workspace.ts",
     ],
   },
   {
